@@ -1,0 +1,9 @@
+<script type="text/javascript">
+chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
+	if(request.method === "localStorage") {
+		sendResponse({data: localStorage[request.key]});
+	} else {
+		sendResponse({});
+	}
+});
+</script>
