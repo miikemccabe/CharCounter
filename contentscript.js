@@ -1,6 +1,7 @@
-var nameInput = document.getElementById("ctl00_TviContent__Pages_ProductDetails_Frame_ProductForm_txt_productname");
-var shortNameInput = document.getElementById("ctl00_TviContent__Pages_ProductDetails_Frame_ProductForm_txt_productshortname");
-var shortDescInput = document.getElementById("ctl00_TviContent__Pages_ProductDetails_Frame_ProductForm_txt_summary");
+/**
+*	Add the styles
+*
+*/
 
 var head = document.getElementsByTagName("head")[0];
 
@@ -12,12 +13,15 @@ style.rel = "stylesheet";
 head.appendChild(style);
 
 
+/**
+*	Char Counter Objects
+*
+*/
 
 var CharDisplay = function(input, max) {
 	this.input = input;
 	this.maxChars = max;
 	this.countOption;
-	
 	this.originalBackgroundColor = this.input.style.backgroundColor;
 	
 	this.div = document.createElement("div");
@@ -51,7 +55,7 @@ function Manager() {
 		var numberOfSubjects = this.subjects.length;
 		for(var i=0; i<numberOfSubjects; i++) {
 			if(subject === this.subjects[i]) {
-				log(subject.toString() + " has already been registered");
+				console.log(subject.input.id + " has already been registered");
 				return false;
 			}
 		}
@@ -80,23 +84,67 @@ function Manager() {
 	
 }
 
+
+/**
+*	The business logic
+*
+*/
+
 var manager = new Manager();
 
-var nameField = new CharDisplay(nameInput, 70);
-var shortNameField = new CharDisplay(shortNameInput, 55);
-var shortDescField = new CharDisplay(shortDescInput, 255);
 
-manager.register(nameField);
-manager.register(shortNameField);
-manager.register(shortDescField);
+var nameInput = document.getElementById("ctl00_TviContent__Pages_ProductDetails_Frame_ProductForm_txt_productname");
+var shortNameInput = document.getElementById("ctl00_TviContent__Pages_ProductDetails_Frame_ProductForm_txt_productshortname");
+var shortDescInput = document.getElementById("ctl00_TviContent__Pages_ProductDetails_Frame_ProductForm_txt_summary");
+var additionalImageInput = document.getElementById("ctl00_TviContent__Pages_Images_Frame_Gallery_txt_title");
 
-chrome.extension.sendRequest({method: "localStorage", key: "count"}, function(response){
-	manager.sendMessage("init", response.data);
-	manager.sendMessage("update");
-});
+var advancedPromoDescInput = document.getElementById("ctl00_TviContent_txt_description");
+
+
+
+if(nameInput) {
+	var nameField = new CharDisplay(nameInput, 70);
+	manager.register(nameField);
+}
+
+if(shortNameInput) {
+	var shortNameField = new CharDisplay(shortNameInput, 55);
+	manager.register(shortNameField);
+}
+
+if(shortDescInput) {
+	var shortDescField = new CharDisplay(shortDescInput, 255);
+	manager.register(shortDescField);
+}
+
+if(additionalImageInput) {
+	var additionalImageField = new CharDisplay(additionalImageInput, 50);
+	manager.register(additionalImageField);
+}
+
+if(advancedPromoDescInput) {
+	var advancedPromoDescField = new CharDisplay(advancedPromoDescInput, 81);
+	manager.register(advancedPromoDescField);
+}
+
+/**
+* Add onkeyup
+*
+*/
 
 document.body.onkeyup = (function() { 
 	return function() {
 		manager.sendMessage("update");
 	}
 })();
+
+
+/**
+*	Communicating with localStorage
+*
+*/
+
+chrome.extension.sendRequest({method: "localStorage", key: "count"}, function(response){
+	manager.sendMessage("init", response.data);
+	manager.sendMessage("update");
+});

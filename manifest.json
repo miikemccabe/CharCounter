@@ -1,19 +1,23 @@
 {
   "name": "bodykind Char Counter",
-  "version": "1.3.3",
-  "description": "Counts and displays the number of chars in the Name, ShortName and ShortDescription fields of the bodykind CMS.",
+  "version": "1.3.4",
+  "description": "Counts and displays the number of chars in many char restricted fields of the bodykind CMS.",
   "icons" : {"128": "icon_128.png"},
   "permissions": [
     "tabs", 
     "http://www.bodykind.com/admin/EcomProducts.aspx*",
     "http://newadmin.bodykind.com/admin/EcomProducts.aspx*",
-    "http://test2.bodykind.com/admin/EcomProducts.aspx*"
+    "http://test2.bodykind.com/admin/EcomProducts.aspx*",
+    "http://www.bodykind.com/admin/Promotion.aspx*",
+    "http://newadmin.bodykind.com/admin/Promotion.aspx*"
   ],
   "content_scripts":[{
 		"matches":[
 			"http://newadmin.bodykind.com/admin/EcomProducts.aspx*",
 			"http://www.bodykind.com/admin/EcomProducts.aspx*",
-			"http://test2.bodykind.com/admin/EcomProducts.aspx*"
+			"http://test2.bodykind.com/admin/EcomProducts.aspx*",
+    	"http://www.bodykind.com/admin/Promotion.aspx*",
+    	"http://newadmin.bodykind.com/admin/Promotion.aspx*"
 		],
 		"js":["contentscript.js"]
 	}],
