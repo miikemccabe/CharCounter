@@ -27,61 +27,62 @@ var CharDisplay = function(input, max) {
 	this.div = document.createElement("div");
 	this.div.setAttribute("class", "charCounter");
 	this.input.parentNode.appendChild(this.div);
+}
 	
-	this.init = function(countOption) {
-		this.countOption = countOption;
-	}
-	
-	this.update = function() {
-	
-		if(this.countOption === "countDown") {	
-			this.div.innerHTML = (this.maxChars - this.input.value.length) + " chars left";	
-		} else {
-			this.div.innerHTML = this.input.value.length + " chars";	
-		}
-		if(this.input.value.length > this.maxChars) {
-			this.input.style.backgroundColor = "#faa";
-		} else {
-			this.input.style.backgroundColor = this.originalBackgroundColor;
-		}
-	}	
+CharDisplay.prototype.init = function(countOption) {
+	this.countOption = countOption;
 }
 
-function Manager() {
+CharDisplay.prototype.update = function() {
+	if(this.countOption === "countDown") {	
+		this.div.innerHTML = (this.maxChars - this.input.value.length) + " chars left";	
+	} else {
+		this.div.innerHTML = this.input.value.length + " chars";	
+	}
+	if(this.input.value.length > this.maxChars) {
+		this.input.style.backgroundColor = "#faa";
+	} else {
+		this.input.style.backgroundColor = this.originalBackgroundColor;
+	}
+}	
+
+
+
+var Manager = function() {
 	
 	this.subjects = [];
 	
-	this.register = function(subject) {
-		var numberOfSubjects = this.subjects.length;
-		for(var i=0; i<numberOfSubjects; i++) {
-			if(subject === this.subjects[i]) {
-				console.log(subject.input.id + " has already been registered");
-				return false;
-			}
-		}
-		this.subjects.push(subject);
-	};
+}
 	
-	this.unregister = function(subject) {
-		var numberOfSubjects = this.subjects.length;
-		for(var i=0; i<numberOfSubjects; i++) {
-			if(subject === this.subjects[i]) {
-				return this.subjects.splice(i, 1);
-			}
-		}
-	};
-	
-	this.sendMessage = function(message, args) {
-		var numberOfSubjects = this.subjects.length;
-		for(var i=0; i<numberOfSubjects; i++) {
-			if(args) {
-				this.subjects[i][message](args);
-			} else {
-				this.subjects[i][message]();
-			}
+Manager.prototype.register = function(subject) {
+	var numberOfSubjects = this.subjects.length;
+	for(var i=0; i<numberOfSubjects; i++) {
+		if(subject === this.subjects[i]) {
+			console.log(subject.input.id + " has already been registered");
+			return false;
 		}
 	}
-	
+	this.subjects.push(subject);
+}
+
+Manager.prototype.unregister = function(subject) {
+	var numberOfSubjects = this.subjects.length;
+	for(var i=0; i<numberOfSubjects; i++) {
+		if(subject === this.subjects[i]) {
+			return this.subjects.splice(i, 1);
+		}
+	}
+}
+
+Manager.prototype.sendMessage = function(message, args) {
+	var numberOfSubjects = this.subjects.length;
+	for(var i=0; i<numberOfSubjects; i++) {
+		if(args) {
+			this.subjects[i][message](args);
+		} else {
+			this.subjects[i][message]();
+		}
+	}
 }
 
 
@@ -128,15 +129,22 @@ if(advancedPromoDescInput) {
 }
 
 /**
-* Add onkeyup
+* Add event listeners
 *
 */
 
-document.body.onkeyup = (function() { 
-	return function() {
-		manager.sendMessage("update");
-	}
-})();
+
+addEventListener("keyup", function() {
+	manager.sendMessage("update");
+});
+
+var lastClickedElement;
+
+addEventListener("contextmenu", function(e) {
+	lastClickedElement = e.target;
+});
+
+
 
 
 /**

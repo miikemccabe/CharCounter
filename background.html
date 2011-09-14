@@ -6,4 +6,38 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 		sendResponse({});
 	}
 });
+
+
+function addCharCounter(info, tab) {
+  console.log("item " + info.menuItemId + " was clicked");
+  console.log("info: " + JSON.stringify(info));
+  console.log("tab: " + JSON.stringify(tab));
+}
+
+function removeCharCounter() {
+	console.log("removeCharCounter() called from context menu. No action is defined for this function yet.");
+}
+
+
+var parentMenu = chrome.contextMenus.create({"title": "CharCounter","contexts":["editable"]});
+
+chrome.contextMenus.create({
+	"parentId": parentMenu, 
+	"title": "Add",	
+	"contexts" : ["editable"], 
+	"onclick": addCharCounter 
+});
+
+chrome.contextMenus.create({
+	"parentId": parentMenu, 
+	"title": "Remove", 
+	"contexts" : ["editable"], 
+	"onclick": removeCharCounter 
+});
+
+
+
+
+
+
 </script>
