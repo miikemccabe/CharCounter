@@ -68,7 +68,7 @@ function save_options() {
   		count = radios[i].value;
   	}
   }
-  localStorage["count"] = count;
+  localStorage.setItem("count", count);
 
   // Update status to let user know options were saved.
   var status = document.getElementById("status");
@@ -80,7 +80,7 @@ function save_options() {
 
 // Restores select box state to saved value from localStorage.
 function restore_options() {
-  var count = localStorage["count"];
+  var count = localStorage.getItem("count");
   
   if (!count) {
   	var radio = document.getElementById("countUp");

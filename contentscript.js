@@ -1,3 +1,74 @@
+var DisplayManager = (function() {
+	
+	var subjects = [];
+	
+	var register = function(subject) {
+		var numberOfSubjects = subjects.length;
+		for(var i=0; i<numberOfSubjects; i++) {
+			if(subject.getId() === subjects[i].getId()) {
+				console.log(subject.getId() + " has already been registered");
+				return false;
+			}
+		}
+		subjects.push(subject);
+	};
+	
+
+	var unregister = function(id) {
+		var numberOfSubjects = subjects.length;
+		for(var i=0; i<numberOfSubjects; i++) {
+			if(id === subjects[i].getId()) {
+				return subjects.splice(i, 1);
+			}
+		}
+	};
+	
+	var sendMessage = function(message, args) {
+		var numberOfSubjects = subjects.length;
+		for(var i=0; i<numberOfSubjects; i++) {
+			if(args) {
+				subjects[i][message](args);
+			} else {
+				subjects[i][message]();
+			}
+		}
+	};
+	
+	var sendMessageToId = function(id, message, args) {
+		var numberOfSubjects = subjects.length;
+		for(var i=0; i<numberOfSubjects; i++) {
+			if(subjects[i].getId() === id) {
+				if(args) {
+					subjects[i][message](args);
+				} else {
+					subjects[i][message]();
+				}
+			}
+		}
+	};
+	
+	var getSubjectById = function(id) {
+		var numberOfSubjects = subjects.length;
+		for(var i=0; i<numberOfSubjects; i++) {
+			if(id === subjects[i].getId()) {
+				return subjects[i];
+			}
+		}
+	};
+	
+	return {
+		"length" : subjects.length,
+		"register" : register,
+		"unregister" : unregister,
+		"broadcast" : sendMessage,
+		"sendMessageToId" : sendMessageToId,
+		"getSubjectById" : getSubjectById
+	};
+	
+})();
+
+
+
 /**
 *	Add the styles
 *
@@ -21,20 +92,38 @@ head.appendChild(style);
 var CharDisplay = function(input, max) {
 	this.input = input;
 	this.maxChars = max;
-	this.countOption;
+	this.direction = "countUp";
 	this.originalBackgroundColor = this.input.style.backgroundColor;
 	
 	this.div = document.createElement("div");
 	this.div.setAttribute("class", "charCounter");
 	this.input.parentNode.appendChild(this.div);
+	
+	var that = this;
+	
+	var toggleDirection = function() {
+		console.log(that);
+		that.direction = that.direction === "countUp" ? "countDown" : "countUp";	
+		that.update();
+		chrome.extension.sendRequest({
+			"method" : "updateCharCounter",
+			"id" : that.input.id,
+			"state" : { 
+				"direction" : that.direction,
+				"limit" : that.maxChars
+			}});
+	}
+	
+	this.div.addEventListener("click", toggleDirection);
+	
 }
 	
-CharDisplay.prototype.init = function(countOption) {
-	this.countOption = countOption;
+CharDisplay.prototype.init = function(direction) {
+	this.direction = direction;
 }
 
 CharDisplay.prototype.update = function() {
-	if(this.countOption === "countDown") {	
+	if(this.direction === "countDown") {	
 		this.div.innerHTML = (this.maxChars - this.input.value.length) + " chars left";	
 	} else {
 		this.div.innerHTML = this.input.value.length + " chars";	
@@ -46,44 +135,22 @@ CharDisplay.prototype.update = function() {
 	}
 }	
 
+CharDisplay.prototype.getId = function() {
+	return this.input.id;
+}
+
+CharDisplay.prototype.deactivate = function() {
+	this.input.style.backgroundColor = this.originalBackgroundColor;
+	this.div.parentNode.removeChild(this.div);
+}
 
 
-var Manager = function() {
 	
-	this.subjects = [];
-	
-}
-	
-Manager.prototype.register = function(subject) {
-	var numberOfSubjects = this.subjects.length;
-	for(var i=0; i<numberOfSubjects; i++) {
-		if(subject === this.subjects[i]) {
-			console.log(subject.input.id + " has already been registered");
-			return false;
-		}
-	}
-	this.subjects.push(subject);
-}
 
-Manager.prototype.unregister = function(subject) {
-	var numberOfSubjects = this.subjects.length;
-	for(var i=0; i<numberOfSubjects; i++) {
-		if(subject === this.subjects[i]) {
-			return this.subjects.splice(i, 1);
-		}
-	}
-}
 
-Manager.prototype.sendMessage = function(message, args) {
-	var numberOfSubjects = this.subjects.length;
-	for(var i=0; i<numberOfSubjects; i++) {
-		if(args) {
-			this.subjects[i][message](args);
-		} else {
-			this.subjects[i][message]();
-		}
-	}
-}
+
+
+
 
 
 /**
@@ -91,42 +158,8 @@ Manager.prototype.sendMessage = function(message, args) {
 *
 */
 
-var manager = new Manager();
+var lastClickedElement;
 
-
-var nameInput = document.getElementById("ctl00_TviContent__Pages_ProductDetails_Frame_ProductForm_txt_productname");
-var shortNameInput = document.getElementById("ctl00_TviContent__Pages_ProductDetails_Frame_ProductForm_txt_productshortname");
-var shortDescInput = document.getElementById("ctl00_TviContent__Pages_ProductDetails_Frame_ProductForm_txt_summary");
-var additionalImageInput = document.getElementById("ctl00_TviContent__Pages_Images_Frame_Gallery_txt_title");
-
-var advancedPromoDescInput = document.getElementById("ctl00_TviContent_txt_description");
-
-
-
-if(nameInput) {
-	var nameField = new CharDisplay(nameInput, 70);
-	manager.register(nameField);
-}
-
-if(shortNameInput) {
-	var shortNameField = new CharDisplay(shortNameInput, 55);
-	manager.register(shortNameField);
-}
-
-if(shortDescInput) {
-	var shortDescField = new CharDisplay(shortDescInput, 255);
-	manager.register(shortDescField);
-}
-
-if(additionalImageInput) {
-	var additionalImageField = new CharDisplay(additionalImageInput, 50);
-	manager.register(additionalImageField);
-}
-
-if(advancedPromoDescInput) {
-	var advancedPromoDescField = new CharDisplay(advancedPromoDescInput, 81);
-	manager.register(advancedPromoDescField);
-}
 
 /**
 * Add event listeners
@@ -135,10 +168,8 @@ if(advancedPromoDescInput) {
 
 
 addEventListener("keyup", function() {
-	manager.sendMessage("update");
+	DisplayManager.broadcast("update");
 });
-
-var lastClickedElement;
 
 addEventListener("contextmenu", function(e) {
 	lastClickedElement = e.target;
@@ -152,7 +183,67 @@ addEventListener("contextmenu", function(e) {
 *
 */
 
-chrome.extension.sendRequest({method: "localStorage", key: "count"}, function(response){
-	manager.sendMessage("init", response.data);
-	manager.sendMessage("update");
+
+
+// Check local storage for previously added Char Counters
+chrome.extension.sendRequest({method: "getLocalStorage"}, function(localStorage){
+	if(localStorage !== null) {
+		for(var key in localStorage) {
+			if(document.getElementById(key)) {
+				var obj = JSON.parse(localStorage[key]);
+				var charCounter = new CharDisplay(document.getElementById(key), obj.limit);
+				charCounter.direction = obj.direction;
+				DisplayManager.register(charCounter);
+				DisplayManager.broadcast("update");
+			}
+		}
+	}
 });
+
+function addCharCounter() {
+	var charLimit = prompt("What is the maximum number of chars this field should hold?");
+	
+	var charDisplay = new CharDisplay(lastClickedElement, charLimit);
+	DisplayManager.register(charDisplay);
+	DisplayManager.broadcast("update");
+	
+	return {
+		"direction" : "up", 
+		"limit" : charLimit 
+	};
+	
+}
+
+function removeCharCounter() {
+	
+	var id = lastClickedElement.id;
+	
+	DisplayManager.sendMessageToId(id, "deactivate");
+	
+	DisplayManager.unregister(id);
+	
+	DisplayManager.broadcast("update");
+
+}
+
+
+chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
+
+	if(request.method === "addCharCounter") {
+		
+		var state = addCharCounter();
+		
+		sendResponse({"id" : lastClickedElement.id, "state" : state });
+		
+	} else if(request.method === "removeCharCounter") {
+	
+		removeCharCounter();	
+		sendResponse({"id" : lastClickedElement.id });
+		
+	} else {
+	
+		sendResponse({});
+		
+	}
+});
+

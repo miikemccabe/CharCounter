@@ -1,21 +1,38 @@
 <script type="text/javascript">
+
+
 chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 	if(request.method === "localStorage") {
-		sendResponse({data: localStorage[request.key]});
+		sendResponse({data: localStorage.getItem(request.key)});
+	} else if(request.method === "getLocalStorage") {
+		console.log("getLocalStorage message received");
+		sendResponse(localStorage);
+	} else if(request.method === "updateCharCounter") {
+			console.log(request.method);
+			localStorage.setItem(request.id, JSON.stringify(request.state));		
 	} else {
 		sendResponse({});
 	}
 });
 
 
+
+
+
 function addCharCounter(info, tab) {
-  console.log("item " + info.menuItemId + " was clicked");
-  console.log("info: " + JSON.stringify(info));
-  console.log("tab: " + JSON.stringify(tab));
+	chrome.tabs.sendRequest(tab.id, {"method" : "addCharCounter"}, function(response) {
+		if(response.id && response.state) {
+			localStorage.setItem(response.id, JSON.stringify(response.state));
+		}
+	});
 }
 
-function removeCharCounter() {
-	console.log("removeCharCounter() called from context menu. No action is defined for this function yet.");
+function removeCharCounter(info, tab) {
+	chrome.tabs.sendRequest(tab.id, {"method" : "removeCharCounter"}, function(response) {
+		if(response.id) {
+			localStorage.removeItem(response.id);
+		}
+	});
 }
 
 
@@ -34,10 +51,6 @@ chrome.contextMenus.create({
 	"contexts" : ["editable"], 
 	"onclick": removeCharCounter 
 });
-
-
-
-
 
 
 </script>

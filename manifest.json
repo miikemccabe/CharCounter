@@ -6,19 +6,13 @@
   "permissions": [
     "tabs", 
     "contextMenus",
-    "http://www.bodykind.com/admin/EcomProducts.aspx*",
-    "http://newadmin.bodykind.com/admin/EcomProducts.aspx*",
-    "http://test2.bodykind.com/admin/EcomProducts.aspx*",
-    "http://www.bodykind.com/admin/Promotion.aspx*",
-    "http://newadmin.bodykind.com/admin/Promotion.aspx*"
+	    "http://*/*",
+	    "http://*/*"
   ],
   "content_scripts":[{
 		"matches":[
-			"http://newadmin.bodykind.com/admin/EcomProducts.aspx*",
-			"http://www.bodykind.com/admin/EcomProducts.aspx*",
-			"http://test2.bodykind.com/admin/EcomProducts.aspx*",
-    	"http://www.bodykind.com/admin/Promotion.aspx*",
-    	"http://newadmin.bodykind.com/admin/Promotion.aspx*"
+	    "http://*/*",
+	    "http://*/*"
 		],
 		"js":["contentscript.js"]
 	}],
