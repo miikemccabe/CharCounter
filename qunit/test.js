@@ -47,4 +47,3 @@ test("deactivate", function() {
 	this.counter.deactivate();
 	equal(this.counter.div, undefined);
 });
-

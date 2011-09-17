@@ -19,22 +19,9 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 
 
 
-function addCharCounter(info, tab) {
-	chrome.tabs.sendRequest(tab.id, {"method" : "addCharCounter"}, function(response) {
-		if(response.id && response.state) {
-			localStorage.setItem(response.id, JSON.stringify(response.state));
-		}
-	});
-}
-
-function removeCharCounter(info, tab) {
-	chrome.tabs.sendRequest(tab.id, {"method" : "removeCharCounter"}, function(response) {
-		if(response.id) {
-			localStorage.removeItem(response.id);
-		}
-	});
-}
-
+/**
+*	Create the context menus
+*/
 
 var parentMenu = chrome.contextMenus.create({"title": "CharCounter","contexts":["editable"]});
 
@@ -51,6 +38,23 @@ chrome.contextMenus.create({
 	"contexts" : ["editable"], 
 	"onclick": removeCharCounter 
 });
+
+
+function addCharCounter(info, tab) {
+	chrome.tabs.sendRequest(tab.id, {"method" : "addCharCounter"}, function(response) {
+		if(response.id && response.state) {
+			localStorage.setItem(response.id, JSON.stringify(response.state));
+		}
+	});
+}
+
+function removeCharCounter(info, tab) {
+	chrome.tabs.sendRequest(tab.id, {"method" : "removeCharCounter"}, function(response) {
+		if(response.id) {
+			localStorage.removeItem(response.id);
+		}
+	});
+}
 
 
 </script>

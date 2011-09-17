@@ -1,20 +1,20 @@
 {
-  "name": "bodykind Char Counter",
+  "name": "Char Counter",
   "version": "2.0.0",
-  "description": "Counts and displays the number of chars in many char restricted fields of the bodykind CMS.",
+  "description": "Adds the ability to add Char Counters to any input field",
   "icons" : {"128": "icon_128.png", "16" : "icon_16.png"},
   "permissions": [
     "tabs", 
     "contextMenus",
 	    "http://*/*",
-	    "http://*/*"
+	    "https://*/*"
   ],
   "content_scripts":[{
 		"matches":[
 	    "http://*/*",
-	    "http://*/*"
+	    "https://*/*"
 		],
-		"js":["contentscript.js"],
+		"js":["DisplayManager.js","CharDisplay.js","contentscript.js"],
 		"css":["charCounterStyles.css"],
 		"run_at" : "document_end"
 	}],

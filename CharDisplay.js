@@ -1,26 +1,9 @@
-var CharDisplay = function(input, limit) {
+var CharDisplay = function(input) {
 	this.input = input;
-	this.limit = limit;
-	this.direction = "countUp";
+	this.limit;
+	this.direction;
 	this.originalBackgroundColor = this.input.style.backgroundColor;
-	this.display;
-	
-	var that = this;
-	
-	var toggleDirection = function() {
-		that.direction = that.direction === "countUp" ? "countDown" : "countUp";	
-		that.update();
-		chrome.extension.sendRequest({
-			"method" : "updateCharCounter",
-			"id" : that.input.id,
-			"state" : { 
-				"direction" : that.direction,
-				"limit" : that.maxChars
-			}});
-	}
-	
-	//this.display.addEventListener("click", toggleDirection);
-	
+	this.display;	
 }
 
 CharDisplay.prototype.init = function(direction, limit) {
@@ -32,7 +15,15 @@ CharDisplay.prototype.init = function(direction, limit) {
 CharDisplay.prototype.createDisplay = function() {
 	this.display = document.createElement("div");
 	this.display.setAttribute("class", "charCounter");
+	this.display.setAttribute("title", "Click to toggle between counting up and counting down");
 	this.input.parentNode.appendChild(this.display);
+	
+	this.display.addEventListener("mouseover", this.displayLimit.bind(this));
+	this.display.addEventListener("mouseout", this.update.bind(this));
+	
+	if(this.limit > 0) {	
+		this.display.addEventListener("click", this.toggleDirection.bind(this));
+	}
 }
 
 CharDisplay.prototype.setDirection = function(direction) {
@@ -41,6 +32,26 @@ CharDisplay.prototype.setDirection = function(direction) {
 		this.direction = direction;
 	} else {
 		this.direction = currentDirection || "countUp";
+	}
+}
+
+CharDisplay.prototype.toggleDirection = function() {
+	this.direction = this.direction === "countUp" ? "countDown" : "countUp";	
+	this.update();
+	chrome.extension.sendRequest({
+		"method" : "updateCharCounter",
+		"id" : this.input.id,
+		"state" : { 
+			"direction" : this.direction,
+			"limit" : this.limit
+		}});
+}
+
+CharDisplay.prototype.displayLimit = function() {
+	if(this.limit > 0) {
+		this.display.innerHTML = this.limit + " chars allowed";
+	} else {
+		this.display.innerHTML = "Unlimited chars allowed";
 	}
 }
 
@@ -53,12 +64,27 @@ CharDisplay.prototype.setLimit = function(limit) {
 }
 
 CharDisplay.prototype.update = function() {
-	if(this.direction === "countDown") {	
-		this.display.innerHTML = (this.maxChars - this.input.value.length) + " chars left";	
-	} else {
-		this.display.innerHTML = this.input.value.length + " chars";	
+	var charOrChars = "chars";
+	
+	if(this.input.value.length === 1) {
+		charOrChars = "char";
 	}
-	if(this.input.value.length > this.maxChars) {
+	
+	if(this.limit === 0) {
+		this.display.innerHTML = this.input.value.length + " "+charOrChars;
+		return;
+	} else {
+		if(this.direction === "countDown") {
+			if((this.limit - this.input.value.length) === 1) {
+				charOrChars = "char";
+			}
+			this.display.innerHTML = (this.limit - this.input.value.length) + " " + charOrChars + " left";
+		} else {
+			this.display.innerHTML = this.input.value.length + " " + charOrChars;		
+		}
+	}
+	
+	if(this.input.value.length > this.limit) {
 		this.input.style.backgroundColor = "#faa";
 	} else {
 		this.input.style.backgroundColor = this.originalBackgroundColor;
@@ -74,3 +100,6 @@ CharDisplay.prototype.deactivate = function() {
 	this.display.parentNode.removeChild(this.display);
 	this.display = undefined;
 }
+
+
+
