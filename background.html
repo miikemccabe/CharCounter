@@ -2,9 +2,7 @@
 
 
 chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
-	if(request.method === "localStorage") {
-		sendResponse({data: localStorage.getItem(request.key)});
-	} else if(request.method === "getLocalStorage") {
+	if(request.method === "getLocalStorage") {
 		console.log("getLocalStorage message received");
 		sendResponse(localStorage);
 	} else if(request.method === "updateCharCounter") {

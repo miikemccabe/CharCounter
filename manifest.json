@@ -18,6 +18,5 @@
 		"css":["charCounterStyles.css"],
 		"run_at" : "document_end"
 	}],
-  "options_page" : "options.html",
   "background_page": "background.html"
 }
