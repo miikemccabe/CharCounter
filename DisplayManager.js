@@ -4,13 +4,19 @@ var DisplayManager = (function() {
 	
 	var register = function(subject) {
 		var numberOfSubjects = subjects.length;
-		for(var i=0; i<numberOfSubjects; i++) {
-			if(subject.getId() === subjects[i].getId()) {
-				console.log(subject.getId() + " has already been registered");
-				return false;
+		
+		if(subject instanceof CharDisplay) {
+			for(var i=0; i<numberOfSubjects; i++) {
+				if(subject.getId() === subjects[i].getId()) {
+					console.log(subject.getId() + " has already been registered");
+					return false;
+				}
 			}
+			subjects.push(subject);
+			return true;
+		} else {
+			return false;
 		}
-		subjects.push(subject);
 	};
 	
 
@@ -19,17 +25,28 @@ var DisplayManager = (function() {
 		for(var i=0; i<numberOfSubjects; i++) {
 			if(id === subjects[i].getId()) {
 				return subjects.splice(i, 1);
+			} else {
+				return false;
 			}
 		}
 	};
 	
 	var sendMessage = function(message, args) {
+		if(!message) {
+			return false;
+		}
 		var numberOfSubjects = subjects.length;
 		for(var i=0; i<numberOfSubjects; i++) {
-			if(args) {
-				subjects[i][message](args);
+			if(subjects[i][message]) {
+				if(args) {
+					subjects[i][message](args);
+				} else {
+					subjects[i][message]();
+				}
+				return true;
 			} else {
-				subjects[i][message]();
+				console.log("No subjects understood the message '" + message + "'");
+				return false;
 			}
 		}
 	};
@@ -40,11 +57,14 @@ var DisplayManager = (function() {
 			if(subjects[i].getId() === id) {
 				if(args) {
 					subjects[i][message](args);
+					return true;
 				} else {
 					subjects[i][message]();
+					return true;
 				}
 			}
 		}
+		return false;
 	};
 	
 	var getSubjectById = function(id) {
@@ -58,8 +78,12 @@ var DisplayManager = (function() {
 		return subject;
 	};
 	
+	var length = function() {
+		return subjects.length;
+	};
+	
 	return {
-		"length" : subjects.length,
+		"length" : length,
 		"register" : register,
 		"unregister" : unregister,
 		"broadcast" : sendMessage,
