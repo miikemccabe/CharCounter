@@ -37,6 +37,20 @@ chrome.contextMenus.create({
 	"onclick": removeCharCounter 
 });
 
+chrome.contextMenus.create({
+	"parentId": parentMenu,
+	"contexts" : ["editable"], 
+	"type" : "separator",
+	"onclick": clearAll 
+});
+
+chrome.contextMenus.create({
+	"parentId": parentMenu, 
+	"title": "Clear all", 
+	"contexts" : ["editable"], 
+	"onclick": clearAll 
+});
+
 
 function addCharCounter(info, tab) {
 	chrome.tabs.sendRequest(tab.id, {"method" : "addCharCounter"}, function(response) {
@@ -52,6 +66,13 @@ function removeCharCounter(info, tab) {
 			localStorage.removeItem(response.id);
 		}
 	});
+}
+
+function clearAll(info, tab) {
+	var check = confirm("Are you sure you want to delete all Char Counters?");
+	if(check) {
+		localStorage.clear();
+	}
 }
 
 
