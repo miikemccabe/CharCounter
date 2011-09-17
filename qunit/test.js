@@ -2,6 +2,11 @@
 // For blagging that the chrome object exists		
 		var chrome = { extension : new Object() };
 		chrome.extension.sendRequest = function(){};
+		
+
+/*************************************************************
+*	CharDisplay module
+*************************************************************/
 
 
 module("CharDisplay", {
@@ -14,6 +19,8 @@ module("CharDisplay", {
 		this.counter.createDisplay();
 	}
 });
+
+////////// Tests
 
 test("init()", function() {
 	this.counter.deactivate();
@@ -67,11 +74,38 @@ test("deactivate", function() {
 	equal(this.counter.div, undefined);
 });
 
+test("charOrChars()", function() {
+
+	this.counter.init();
+	equal(this.counter.limit, 0, "limit should be 0");
+	this.counter.input.value = "Hello";
+	equal(this.counter.input.value.length, 5, "the inputs length should be 5");
+	equal(this.counter.charOrChars(), "chars");
+	
+	this.counter.input.value = "a";
+	equal(this.counter.input.value.length, 1, "the inputs length should be 1");
+	
+	equal(this.counter.charOrChars(), "char");
+	
+	this.counter.setLimit(5);
+	equal(this.counter.limit, 5, "set the limit to 5");
+	
+	this.counter.setDirection("countDown");
+	equal(this.counter.direction, "countDown", "set the direction to 'countDown'");
+	
+	equal(this.counter.charOrChars(), "chars");
+	
+	this.counter.input.value = "Hell";
+	
+	equal(this.counter.charOrChars(), "char");
+	
+});
 
 
 
-
-
+/*************************************************************
+*	DisplayManager module
+*************************************************************/
 
 
 module("DisplayManager", {
@@ -90,6 +124,8 @@ module("DisplayManager", {
 		}
 	}
 });
+
+////////// Tests
 
 test("check setup ran ok", function() {
 	equal(this.subjects.length, 5, "check the number of subjects");

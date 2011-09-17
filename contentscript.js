@@ -28,7 +28,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 		if(state !== false) {
 			sendResponse({"id" : lastClickedElement.id, "state" : state });
 		} else {
-			sendRespons({});
+			sendResponse({});
 		}
 		
 	} else if(request.method === "removeCharCounter") {

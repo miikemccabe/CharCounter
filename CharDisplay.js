@@ -64,20 +64,13 @@ CharDisplay.prototype.setLimit = function(limit) {
 }
 
 CharDisplay.prototype.update = function() {
-	var charOrChars = "chars";
-	
-	if(this.input.value.length === 1) {
-		charOrChars = "char";
-	}
+	var charOrChars = this.charOrChars();
 	
 	if(this.limit === 0) {
-		this.display.innerHTML = this.input.value.length + " "+charOrChars;
+		this.display.innerHTML = this.input.value.length + " " + charOrChars;
 		return;
 	} else {
 		if(this.direction === "countDown") {
-			if((this.limit - this.input.value.length) === 1) {
-				charOrChars = "char";
-			}
 			this.display.innerHTML = (this.limit - this.input.value.length) + " " + charOrChars + " left";
 		} else {
 			this.display.innerHTML = this.input.value.length + " " + charOrChars;		
@@ -99,6 +92,17 @@ CharDisplay.prototype.deactivate = function() {
 	this.input.style.backgroundColor = this.originalBackgroundColor;
 	this.display.parentNode.removeChild(this.display);
 	this.display = undefined;
+}
+
+CharDisplay.prototype.charOrChars = function() {
+	var length;
+	
+	if(this.limit === 0 || this.direction === "countUp") {
+		length = this.input.value.length;
+	} else {
+		length = (this.limit - this.input.value.length);
+	}
+	return length === 1 ? "char" : "chars";	
 }
 
 
