@@ -73,6 +73,7 @@ var DisplayManager = (function() {
 *	Add the styles
 *
 */
+/*
 
 var head = document.getElementsByTagName("head")[0];
 
@@ -82,6 +83,7 @@ style.type = "text/css";
 style.rel = "stylesheet";
 
 head.appendChild(style);
+*/
 
 
 /**
@@ -102,7 +104,6 @@ var CharDisplay = function(input, max) {
 	var that = this;
 	
 	var toggleDirection = function() {
-		console.log(that);
 		that.direction = that.direction === "countUp" ? "countDown" : "countUp";	
 		that.update();
 		chrome.extension.sendRequest({
