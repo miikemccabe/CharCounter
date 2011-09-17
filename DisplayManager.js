@@ -32,23 +32,22 @@ var DisplayManager = (function() {
 	};
 	
 	var sendMessage = function(message, args) {
+		var messageUnderstood = false;
 		if(!message) {
 			return false;
 		}
 		var numberOfSubjects = subjects.length;
 		for(var i=0; i<numberOfSubjects; i++) {
 			if(subjects[i][message]) {
+				messageUnderstood = true;
 				if(args) {
 					subjects[i][message](args);
 				} else {
 					subjects[i][message]();
 				}
-				return true;
-			} else {
-				console.log("No subjects understood the message '" + message + "'");
-				return false;
 			}
 		}
+		return messageUnderstood;
 	};
 	
 	var sendMessageToId = function(id, message, args) {
