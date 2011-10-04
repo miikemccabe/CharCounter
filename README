@@ -8,4 +8,3 @@ To Do
 
 1 Fix remove bug (appears to have stopped working on Windows)
 2 Add icon to 'Clear all' context menu option
-3 Make CharCounterFactory.remove(); method take the id to be removed as an argument

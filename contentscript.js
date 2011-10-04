@@ -33,7 +33,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 		
 	} else if(request.method === "removeCharCounter") {
 	
-		CharCounterFactory.remove();	
+		CharCounterFactory.remove(lastClickedElement.id);	
 		sendResponse({"id" : lastClickedElement.id });
 		
 	} else {
@@ -71,10 +71,8 @@ var CharCounterFactory = (function() {
 		return getState(charDisplay);
 	};
 	
-	var remove = function() {
+	var remove = function(id) {
 	
-		var id = lastClickedElement.id;
-		
 		DisplayManager.sendMessageToId(id, "deactivate");
 		
 		DisplayManager.unregister(id);
