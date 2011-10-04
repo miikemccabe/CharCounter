@@ -46,7 +46,7 @@ test("setDirection()", function() {
 	equal(this.counter.direction, currentDirection, "5");
 });
 
-test("toggleDirection", function() {
+test("toggleDirection()", function() {
 	this.counter.setDirection("countUp");
 	this.counter.toggleDirection();
 	equal(this.counter.direction, "countDown");
@@ -69,7 +69,7 @@ test("getId()", function() {
 	equal(this.counter.input.id, this.counter.getId(), "getId() should equal CharDisplay.input.id");
 });
 
-test("deactivate", function() {
+test("deactivate()", function() {
 	this.counter.deactivate();
 	equal(this.counter.div, undefined);
 });
